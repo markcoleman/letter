@@ -6,27 +6,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Google Fonts for modern typography -->
   <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <!-- Link to external CSS -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <!-- Hero Section -->
-  <div class="hero">
+  <div class="hero" role="banner">
     <h1>Generate DOGE Letters</h1>
   </div>
 
   <!-- Main Content Container -->
-  <div class="container">
-    <form id="infoForm">
+  <div class="container" role="main">
+    <form id="infoForm" aria-label="Letter generation form">
       <div class="full-width">
         <label for="yourName">Your Name:</label>
-        <input type="text" id="yourName" required>
+        <input type="text" id="yourName" required aria-required="true">
       </div>
       <div class="full-width">
         <label for="streetAddress">Street Address:</label>
         <!-- Visible field with Google Places autocomplete -->
-        <input type="text" id="streetAddress" placeholder="Start typing your street address" required>
+        <input type="text" id="streetAddress" placeholder="Start typing your street address" required aria-required="true">
       </div>
       <!-- Hidden fields for individual address components -->
       <input type="hidden" id="streetNumber">
@@ -36,38 +38,49 @@
       <input type="hidden" id="zip">
       <div class="half-width">
         <label for="yourEmail">Your Email:</label>
-        <input type="email" id="yourEmail" required>
+        <input type="email" id="yourEmail" required aria-required="true">
       </div>
       <div class="half-width">
         <label for="yourPhone">Your Phone Number:</label>
-        <input type="text" id="yourPhone" required>
+        <input type="text" id="yourPhone" required aria-required="true">
       </div>
       <div class="full-width">
         <label for="yourDate">Date:</label>
-        <!-- Date input that will default to the local date -->
-        <input type="date" id="yourDate" required>
+        <!-- Date input that defaults to today's local date -->
+        <input type="date" id="yourDate" required aria-required="true">
       </div>
       <!-- Advanced Options Toggle -->
       <div class="full-width" style="text-align: center;">
-        <button type="button" id="advancedOptionsToggle" onclick="toggleAdvancedOptions()">Show Advanced Options</button>
+        <button type="button" id="advancedOptionsToggle" onclick="toggleAdvancedOptions()" aria-expanded="false">
+          <i class="fa fa-cogs"></i> Show Advanced Options
+        </button>
       </div>
       <!-- Advanced Options Section -->
-      <div id="advancedOptions" class="full-width">
+      <div id="advancedOptions" class="full-width" aria-hidden="true">
         <label for="customLetterBody">Custom Letter Body Content (Advanced):</label>
-        <textarea id="customLetterBody"></textarea>
+        <textarea id="customLetterBody" aria-label="Custom Letter Body"></textarea>
+        <h3>Edit Representatives</h3>
+        <div id="repEditor" aria-label="Representative editor"></div>
+        <button type="button" class="rep-btn" onclick="addRepresentative()">
+          <i class="fa fa-plus"></i> Add Representative
+        </button>
       </div>
       <div class="full-width" style="text-align: center;">
-        <button type="button" onclick="generateLetters()">Generate Letters</button>
+        <button type="button" onclick="generateLetters()">
+          <i class="fa fa-magic"></i> Generate Letters
+        </button>
       </div>
     </form>
 
-    <!-- Print Button -->
-    <div style="text-align: center;">
-      <button id="printButton" type="button" onclick="window.print()">Print Letters</button>
+    <!-- Print Button (hidden until letters are generated) -->
+    <div id="printButtonContainer" style="text-align: center; display: none;">
+      <button id="printButton" type="button" onclick="window.print()">
+        <i class="fa fa-print"></i> Print Letters
+      </button>
     </div>
 
     <!-- Container for the generated letters -->
-    <div id="lettersContainer"></div>
+    <div id="lettersContainer" aria-live="polite"></div>
   </div>
 
   <!-- Load the API key configuration -->
@@ -84,9 +97,9 @@
     loadGoogleMapsAPI();
   </script>
 
-  <!-- JavaScript for autocomplete, toggling advanced options, and letter generation -->
+  <!-- JavaScript for autocomplete, advanced options toggle, representative editor, and letter generation -->
   <script>
-    // Define the default custom letter body content.
+    // Default custom letter body content.
     const defaultCustomBody = `
 <p>
   I am writing as a concerned constituent regarding the Department of Government Efficiency (DOGE). Although DOGE was established by executive order with the aims of reducing wasteful spending, eliminating unnecessary regulations, and "modernizing federal technology and software to maximize governmental efficiency and productivity," it now appears to be run chaotically without regard to established process. This mismanagement is causing significant disruptions.
@@ -105,21 +118,108 @@
 </p>
     `;
 
-    // When the page loads, set the default values.
-    window.addEventListener('DOMContentLoaded', () => {
-      // Set the default date to the local date.
-      document.getElementById('yourDate').value = getLocalDateString();
-      // Populate the custom letter body textarea with default content.
-      document.getElementById('customLetterBody').value = defaultCustomBody.trim();
-    });
+    // Default list of representatives.
+    let reps = [
+      {
+        id: "scot-perry",
+        title: "Letter – To U.S. House, Rep. Scot Perry (District 10)",
+        recipientHTML: "The Honorable Scot Perry<br>4999 Louise Drive, Suite 205<br>Mechanicsburg, PA 17055<br>Phone: 717-550-6565",
+        subject: "Concern Over Chaotic Management of DOGE (Department of Government Efficiency)",
+        greeting: "Dear Representative Perry:"
+      },
+      {
+        id: "dawn-keefer",
+        title: "Letter – To Senator Dawn Keefer",
+        recipientHTML: "<strong>Option 1 – Official Senate Address:</strong><br>Senator Dawn Keefer<br>Senate Box 203031<br>Harrisburg, PA 17120-3031<br>Room: 168 Main Capitol<br>Phone: (717) 787-8524<br>FAX: (717) 782-2920<br><br><strong>Option 2 – Dillsburg Office Address:</strong><br>Senator Dawn Keefer<br>12 North Baltimore Street<br>Dillsburg, PA 17019<br>Phone: (717) 432-1730<br>FAX: (717) 432-1733",
+        subject: "Request for Oversight on the Chaotic Implementation of DOGE (Department of Government Efficiency)",
+        greeting: "Dear Senator Keefer:"
+      },
+      {
+        id: "marc-anderson",
+        title: "Letter – To Hon. Marc S. Anderson",
+        recipientHTML: "<strong>Option 1 – Dillsburg Office Address:</strong><br>Hon. Marc S. Anderson<br>1 East Harrisburg Street<br>Dillsburg, PA 17019<br>Phone: (717) 432-0792<br>Toll Free: (833) 933-2965<br>Fax: (717) 432-0795<br><br><strong>Option 2 – Capitol Address:</strong><br>Hon. Marc S. Anderson<br>428 Irvis Office Building<br>P.O. Box 202092<br>Harrisburg, PA 17120-2092<br>Phone: (717) 783-8783<br>Fax: (717) 782-2920",
+        subject: "Concern Over the Chaotic Operation of DOGE (Department of Government Efficiency)",
+        greeting: "Dear Representative Anderson:"
+      },
+      {
+        id: "john-fetterman",
+        title: "Letter – To U.S. Senate, Sen. John Fetterman",
+        recipientHTML: "Senator John Fetterman<br>142 Russell Senate Office Building<br>Washington, DC 20510<br>Phone: (202) 224-4254",
+        subject: "Request for Enhanced Oversight on the Chaotic Management of DOGE (Department of Government Efficiency)",
+        greeting: "Dear Senator Fetterman:"
+      },
+      {
+        id: "david-mccormick",
+        title: "Letter – To U.S. Senate, Sen. David McCormick",
+        recipientHTML: "Senator David McCormick<br>B40C Dirksen Senate Office Building<br>Washington, DC 20510",
+        subject: "Concern Over the Chaotic Management of DOGE (Department of Government Efficiency)",
+        greeting: "Dear Senator McCormick:"
+      }
+    ];
 
-    // Helper function to get the local date formatted as YYYY-MM-DD.
+    // Render the Representative Editor as a card-style UI.
+    function renderRepEditor() {
+      const repEditorDiv = document.getElementById('repEditor');
+      repEditorDiv.innerHTML = "";
+      reps.forEach((rep, index) => {
+        const card = document.createElement('div');
+        card.className = "rep-card";
+        card.setAttribute("role", "group");
+        card.setAttribute("aria-label", "Representative card");
+        card.innerHTML = `
+          <div class="card-header">
+            Representative ${index + 1}
+          </div>
+          <label>Title:</label>
+          <input type="text" value="${rep.title}" onchange="updateRep(${index}, 'title', this.value)" aria-label="Representative title">
+          <label>Recipient HTML:</label>
+          <textarea onchange="updateRep(${index}, 'recipientHTML', this.value)" aria-label="Recipient HTML">${rep.recipientHTML}</textarea>
+          <label>Subject:</label>
+          <input type="text" value="${rep.subject}" onchange="updateRep(${index}, 'subject', this.value)" aria-label="Representative subject">
+          <label>Greeting:</label>
+          <input type="text" value="${rep.greeting}" onchange="updateRep(${index}, 'greeting', this.value)" aria-label="Representative greeting">
+          <div class="card-actions">
+            <button type="button" class="rep-btn" onclick="deleteRep(${index})" aria-label="Delete representative">
+              <i class="fa fa-trash"></i> Delete
+            </button>
+          </div>
+        `;
+        repEditorDiv.appendChild(card);
+      });
+    }
+
+    // Update a representative property.
+    function updateRep(index, field, value) {
+      reps[index][field] = value;
+    }
+
+    // Delete a representative.
+    function deleteRep(index) {
+      if (confirm("Are you sure you want to delete this representative?")) {
+        reps.splice(index, 1);
+        renderRepEditor();
+      }
+    }
+
+    // Add a new representative.
+    function addRepresentative() {
+      const newRep = {
+        id: "new-rep-" + Date.now(),
+        title: "New Representative",
+        recipientHTML: "Enter recipient details here",
+        subject: "Subject Here",
+        greeting: "Dear Representative:"
+      };
+      reps.push(newRep);
+      renderRepEditor();
+    }
+
+    // Helper to get local date as YYYY-MM-DD.
     function getLocalDateString() {
       const today = new Date();
       const year = today.getFullYear();
       let month = today.getMonth() + 1;
       let day = today.getDate();
-      // Pad month and day with leading zeros if needed.
       month = month < 10 ? '0' + month : month;
       day = day < 10 ? '0' + day : day;
       return `${year}-${month}-${day}`;
@@ -129,12 +229,15 @@
     function toggleAdvancedOptions() {
       const advDiv = document.getElementById('advancedOptions');
       const toggleBtn = document.getElementById('advancedOptionsToggle');
-      if (advDiv.style.display === "none" || advDiv.style.display === "") {
+      const currentState = advDiv.style.display;
+      if (currentState === "none" || currentState === "") {
         advDiv.style.display = "block";
         toggleBtn.textContent = "Hide Advanced Options";
+        toggleBtn.setAttribute("aria-expanded", "true");
       } else {
         advDiv.style.display = "none";
         toggleBtn.textContent = "Show Advanced Options";
+        toggleBtn.setAttribute("aria-expanded", "false");
       }
     }
 
@@ -154,7 +257,6 @@
         let state = '';
         let zip = '';
 
-        // Extract address components.
         for (const component of place.address_components) {
           const types = component.types;
           if (types.indexOf('street_number') > -1) {
@@ -173,7 +275,6 @@
             zip = component.long_name;
           }
         }
-        // Store extracted values in hidden inputs.
         document.getElementById('streetNumber').value = streetNumber;
         document.getElementById('route').value = route;
         document.getElementById('city').value = city;
@@ -182,9 +283,15 @@
       });
     }
 
-    // Generate letters by iterating over a list of representatives.
+    // Set default date and custom letter body on load.
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('yourDate').value = getLocalDateString();
+      document.getElementById('customLetterBody').value = defaultCustomBody.trim();
+      renderRepEditor();
+    });
+
+    // Generate letters by iterating over the representatives array.
     function generateLetters() {
-      // Retrieve form values.
       const name = document.getElementById('yourName').value;
       const streetAddress = document.getElementById('streetAddress').value;
       const streetNumber = document.getElementById('streetNumber').value;
@@ -196,56 +303,14 @@
       const phone = document.getElementById('yourPhone').value;
       const date = document.getElementById('yourDate').value;
       
-      // Combine address components.
       const fullStreet = (streetNumber && route) ? `${streetNumber} ${route}` : streetAddress;
       const fullAddress = `${fullStreet}<br>${city}, ${state} ${zip}`;
       
-      // Get the advanced custom letter body; if empty, use the default.
       let customBody = document.getElementById('customLetterBody').value.trim();
       if (!customBody) {
         customBody = defaultCustomBody;
       }
       
-      // Define an array of representative objects.
-      const reps = [
-        {
-          id: "scot-perry",
-          title: "Letter – To U.S. House, Rep. Scot Perry (District 10)",
-          recipientHTML: "The Honorable Scot Perry<br>4999 Louise Drive, Suite 205<br>Mechanicsburg, PA 17055<br>Phone: 717-550-6565",
-          subject: "Concern Over Chaotic Management of DOGE (Department of Government Efficiency)",
-          greeting: "Dear Representative Perry,"
-        },
-        {
-          id: "dawn-keefer",
-          title: "Letter – To Senator Dawn Keefer",
-          recipientHTML: "<strong>Option 1 – Official Senate Address:</strong><br>Senator Dawn Keefer<br>Senate Box 203031<br>Harrisburg, PA 17120-3031<br>Room: 168 Main Capitol<br>Phone: (717) 787-8524<br>FAX: (717) 782-2920<br><br><strong>Option 2 – Dillsburg Office Address:</strong><br>Senator Dawn Keefer<br>12 North Baltimore Street<br>Dillsburg, PA 17019<br>Phone: (717) 432-1730<br>FAX: (717) 432-1733",
-          subject: "Request for Oversight on the Chaotic Implementation of DOGE (Department of Government Efficiency)",
-          greeting: "Dear Senator Keefer,"
-        },
-        {
-          id: "marc-anderson",
-          title: "Letter – To Hon. Marc S. Anderson",
-          recipientHTML: "<strong>Option 1 – Dillsburg Office Address:</strong><br>Hon. Marc S. Anderson<br>1 East Harrisburg Street<br>Dillsburg, PA 17019<br>Phone: (717) 432-0792<br>Toll Free: (833) 933-2965<br>Fax: (717) 432-0795<br><br><strong>Option 2 – Capitol Address:</strong><br>Hon. Marc S. Anderson<br>428 Irvis Office Building<br>P.O. Box 202092<br>Harrisburg, PA 17120-2092<br>Phone: (717) 783-8783<br>Fax: (717) 782-2920",
-          subject: "Concern Over the Chaotic Operation of DOGE (Department of Government Efficiency)",
-          greeting: "Dear Representative Anderson,"
-        },
-        {
-          id: "john-fetterman",
-          title: "Letter – To U.S. Senate, Sen. John Fetterman",
-          recipientHTML: "Senator John Fetterman<br>142 Russell Senate Office Building<br>Washington, DC 20510<br>Phone: (202) 224-4254",
-          subject: "Request for Enhanced Oversight on the Chaotic Management of DOGE (Department of Government Efficiency)",
-          greeting: "Dear Senator Fetterman,"
-        },
-        {
-          id: "david-mccormick",
-          title: "Letter – To U.S. Senate, Sen. David McCormick",
-          recipientHTML: "Senator David McCormick<br>B40C Dirksen Senate Office Building<br>Washington, DC 20510",
-          subject: "Concern Over the Chaotic Management of DOGE (Department of Government Efficiency)",
-          greeting: "Dear Senator McCormick,"
-        }
-      ];
-      
-      // Build the letters by iterating over the reps array.
       let allLettersHTML = "";
       reps.forEach(rep => {
         allLettersHTML += `
@@ -267,8 +332,9 @@
         `;
       });
       
-      // Insert the generated letters into the page.
       document.getElementById('lettersContainer').innerHTML = allLettersHTML;
+      // Show the Print Letters button now that letters have been generated.
+      document.getElementById('printButtonContainer').style.display = "block";
     }
   </script>
 

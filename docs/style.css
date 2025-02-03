@@ -1,31 +1,45 @@
-/* Global Styles */
-body {
+/* Dark Theme Colors */
+:root {
+    --background-color: #121212;
+    --surface-color: #1e1e1e;
+    --primary-color: #bb86fc;
+    --primary-hover: #9b66d9;
+    --secondary-color: #03dac6;
+    --secondary-hover: #02b3a8;
+    --text-color: #e0e0e0;
+    --muted-text: #a0a0a0;
+    --border-color: #333;
+    --card-header-bg: #272727;
+  }
+  
+  /* Global Styles */
+  body {
     margin: 0;
     font-family: 'Roboto', sans-serif;
-    background: #f2f4f8;
-    color: #333;
+    background: var(--background-color);
+    color: var(--text-color);
     line-height: 1.6;
   }
   
   a {
-    color: #3498db;
+    color: var(--primary-color);
     text-decoration: none;
   }
   
   /* Hero Section */
   .hero {
-    background: url('https://source.unsplash.com/1600x900/?technology,office') no-repeat center center/cover;
+    background: url('https://picsum.photos/seed/office/1600/900');
     height: 250px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #fff;
+    color: var(--text-color);
     text-align: center;
   }
   
   .hero h1 {
     font-size: 2.5rem;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.7);
     padding: 15px;
     border-radius: 5px;
   }
@@ -35,8 +49,8 @@ body {
     max-width: 900px;
     margin: 20px auto;
     padding: 20px;
-    background: #fff;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    background: var(--surface-color);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.8);
     border-radius: 8px;
   }
   
@@ -60,10 +74,12 @@ body {
   form textarea {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--border-color);
     border-radius: 4px;
     font-size: 1rem;
     box-sizing: border-box;
+    background: var(--surface-color);
+    color: var(--text-color);
     transition: border-color 0.3s ease;
   }
   
@@ -71,31 +87,29 @@ body {
   form input[type="email"]:focus,
   form input[type="date"]:focus,
   form textarea:focus {
-    border-color: #3498db;
+    border-color: var(--primary-color);
     outline: none;
+  }
+  
+  form .full-width {
+    grid-column: 1 / -1;
   }
   
   form .half-width {
     grid-column: span 1;
   }
   
-  @media (min-width: 600px) {
-    form {
-      grid-template-columns: 1fr 1fr;
-    }
-    form .full-width {
-      grid-column: 1 / -1;
-    }
-  }
-  
   /* Buttons */
   form button,
   #printButton,
-  #advancedOptionsToggle {
-    display: inline-block;
-    background-color: #3498db;
-    color: #fff;
-    padding: 12px 20px;
+  #advancedOptionsToggle,
+  .rep-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--primary-color);
+    color: var(--background-color);
+    padding: 8px 16px;
     border: none;
     border-radius: 4px;
     font-size: 1rem;
@@ -104,32 +118,39 @@ body {
     text-align: center;
   }
   
-  form button:hover {
-    background-color: #2980b9;
+  form button:hover,
+  #printButton:hover,
+  #advancedOptionsToggle:hover,
+  .rep-btn:hover {
+    background-color: var(--primary-hover);
   }
   
   #printButton {
-    background-color: #2ecc71;
+    background-color: var(--secondary-color);
     margin-bottom: 20px;
   }
   
   #printButton:hover {
-    background-color: #27ae60;
+    background-color: var(--secondary-hover);
   }
   
   #advancedOptionsToggle {
-    background-color: #95a5a6;
+    background-color: var(--border-color);
     margin-bottom: 10px;
   }
   
   #advancedOptionsToggle:hover {
-    background-color: #7f8c8d;
+    background-color: var(--muted-text);
   }
   
   /* Advanced Options */
   #advancedOptions {
     display: none;
     margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--surface-color);
   }
   
   #advancedOptions textarea {
@@ -138,22 +159,78 @@ body {
     padding: 10px;
     font-family: 'Roboto', sans-serif;
     font-size: 1rem;
-    border: 1px solid #ccc;
+    border: 1px solid var(--border-color);
     border-radius: 4px;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+    background: var(--background-color);
+    color: var(--text-color);
+  }
+  
+  /* Representative Editor - Card Style */
+  #repEditor {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .rep-card {
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: 15px;
+    background: var(--surface-color);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  }
+  
+  .rep-card .card-header {
+    background: var(--card-header-bg);
+    padding: 5px 10px;
+    border-radius: 3px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  
+  .rep-card label {
+    font-weight: 600;
+    margin-top: 10px;
+    display: block;
+  }
+  
+  .rep-card input[type="text"],
+  .rep-card textarea {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 0.95rem;
+    background: var(--background-color);
+    color: var(--text-color);
+  }
+  
+  .rep-card textarea {
+    resize: vertical;
+    height: 80px;
+  }
+  
+  .rep-card .card-actions {
+    margin-top: 10px;
+    text-align: right;
   }
   
   /* Letter Styles */
   .letter {
     margin-bottom: 40px;
     padding: 30px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-color);
     border-radius: 5px;
-    background: #fafafa;
+    background: var(--surface-color);
   }
   
   .letter h2 {
     margin-top: 0;
-    color: #2c3e50;
+    color: var(--primary-color);
   }
   
   .letter p,
@@ -166,15 +243,26 @@ body {
     margin-left: 20px;
   }
   
+  /* Responsive adjustments */
+  @media (min-width: 600px) {
+    form {
+      grid-template-columns: 1fr 1fr;
+    }
+    form .full-width {
+      grid-column: 1 / -1;
+    }
+  }
+  
   /* Print Media Query */
   @media print {
     .letter {
       page-break-after: always;
     }
-    #printButton, #infoForm, .hero, #advancedOptionsToggle, #advancedOptions {
+    #printButton, #infoForm, .hero, #advancedOptionsToggle, #advancedOptions, #repEditor {
       display: none;
     }
     body {
       background: #fff;
+      color: #000;
     }
   }
