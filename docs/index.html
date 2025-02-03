@@ -2,12 +2,31 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Generate DOGE Letters</title>
+  <!-- SEO Optimized Title and Meta Tags -->
+  <title>Generate Custom Letters for Government Efficiency (DOGE) | Mark Coleman's Letter Generator</title>
+  <meta name="description" content="Create and customize letters to government representatives regarding the Department of Government Efficiency (DOGE) with a modern dark-themed letter generator.">
+  <meta name="keywords" content="Government Letters, Custom Letter Generator, DOGE, Department of Government Efficiency, Dark Theme, SEO optimized letters, Letter Customization">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:title" content="Generate Custom Letters for Government Efficiency (DOGE)">
+  <meta property="og:description" content="Customize and generate letters to government representatives regarding the Department of Government Efficiency (DOGE) with a modern dark-themed interface.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://markcoleman.github.io/letter/">
+  <meta property="og:image" content="https://picsum.photos/300/300?random">
+  
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Generate Custom Letters for Government Efficiency (DOGE)">
+  <meta name="twitter:description" content="Customize and generate letters to government representatives regarding the Department of Government Efficiency (DOGE) with a modern dark-themed interface.">
+  <meta name="twitter:image" content="https://picsum.photos/300/300?random">
+  
   <!-- Google Fonts for modern typography -->
   <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet">
+  
   <!-- Font Awesome for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
   <!-- Link to external CSS -->
   <link rel="stylesheet" href="style.css">
 </head>
@@ -61,7 +80,7 @@
         <textarea id="customLetterBody" aria-label="Custom Letter Body"></textarea>
         <h3>Edit Representatives</h3>
         <div id="repEditor" aria-label="Representative editor"></div>
-        <button type="button" class="rep-btn" onclick="addRepresentative()">
+        <button type="button" class="rep-btn" onclick="addRepresentative()" aria-label="Add Representative">
           <i class="fa fa-plus"></i> Add Representative
         </button>
       </div>
@@ -72,9 +91,9 @@
       </div>
     </form>
 
-    <!-- Print Button (hidden until letters are generated) -->
+    <!-- Print Button (initially hidden) -->
     <div id="printButtonContainer" style="text-align: center; display: none;">
-      <button id="printButton" type="button" onclick="window.print()">
+      <button id="printButton" type="button" onclick="window.print()" aria-label="Print Letters">
         <i class="fa fa-print"></i> Print Letters
       </button>
     </div>
@@ -97,7 +116,7 @@
     loadGoogleMapsAPI();
   </script>
 
-  <!-- JavaScript for autocomplete, advanced options toggle, representative editor, and letter generation -->
+  <!-- JavaScript for autocomplete, toggling advanced options, representative editor, and letter generation -->
   <script>
     // Default custom letter body content.
     const defaultCustomBody = `
@@ -157,7 +176,7 @@
       }
     ];
 
-    // Render the Representative Editor as a card-style UI.
+    // Render the Representative Editor as card-style UI.
     function renderRepEditor() {
       const repEditorDiv = document.getElementById('repEditor');
       repEditorDiv.innerHTML = "";
@@ -170,14 +189,14 @@
           <div class="card-header">
             Representative ${index + 1}
           </div>
-          <label>Title:</label>
-          <input type="text" value="${rep.title}" onchange="updateRep(${index}, 'title', this.value)" aria-label="Representative title">
-          <label>Recipient HTML:</label>
-          <textarea onchange="updateRep(${index}, 'recipientHTML', this.value)" aria-label="Recipient HTML">${rep.recipientHTML}</textarea>
-          <label>Subject:</label>
-          <input type="text" value="${rep.subject}" onchange="updateRep(${index}, 'subject', this.value)" aria-label="Representative subject">
-          <label>Greeting:</label>
-          <input type="text" value="${rep.greeting}" onchange="updateRep(${index}, 'greeting', this.value)" aria-label="Representative greeting">
+          <label for="rep-title-${index}">Title:</label>
+          <input id="rep-title-${index}" type="text" value="${rep.title}" onchange="updateRep(${index}, 'title', this.value)" aria-label="Representative title">
+          <label for="rep-recipient-${index}">Recipient HTML:</label>
+          <textarea id="rep-recipient-${index}" onchange="updateRep(${index}, 'recipientHTML', this.value)" aria-label="Recipient HTML">${rep.recipientHTML}</textarea>
+          <label for="rep-subject-${index}">Subject:</label>
+          <input id="rep-subject-${index}" type="text" value="${rep.subject}" onchange="updateRep(${index}, 'subject', this.value)" aria-label="Representative subject">
+          <label for="rep-greeting-${index}">Greeting:</label>
+          <input id="rep-greeting-${index}" type="text" value="${rep.greeting}" onchange="updateRep(${index}, 'greeting', this.value)" aria-label="Representative greeting">
           <div class="card-actions">
             <button type="button" class="rep-btn" onclick="deleteRep(${index})" aria-label="Delete representative">
               <i class="fa fa-trash"></i> Delete
@@ -229,8 +248,7 @@
     function toggleAdvancedOptions() {
       const advDiv = document.getElementById('advancedOptions');
       const toggleBtn = document.getElementById('advancedOptionsToggle');
-      const currentState = advDiv.style.display;
-      if (currentState === "none" || currentState === "") {
+      if (advDiv.style.display === "none" || advDiv.style.display === "") {
         advDiv.style.display = "block";
         toggleBtn.textContent = "Hide Advanced Options";
         toggleBtn.setAttribute("aria-expanded", "true");
@@ -283,7 +301,7 @@
       });
     }
 
-    // Set default date and custom letter body on load.
+    // Set default values on page load.
     window.addEventListener('DOMContentLoaded', () => {
       document.getElementById('yourDate').value = getLocalDateString();
       document.getElementById('customLetterBody').value = defaultCustomBody.trim();
@@ -331,9 +349,8 @@
           </div>
         `;
       });
-      
       document.getElementById('lettersContainer').innerHTML = allLettersHTML;
-      // Show the Print Letters button now that letters have been generated.
+      // Reveal the Print Letters button after letters are generated.
       document.getElementById('printButtonContainer').style.display = "block";
     }
   </script>
