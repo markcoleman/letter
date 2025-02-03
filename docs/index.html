@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Generate DOGE Letters</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    form {
+      margin-bottom: 40px;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    input[type="text"],
+    input[type="email"] {
+      width: 300px;
+      padding: 5px;
+    }
+    .letter {
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #ccc;
+    }
+    /* Ensure each letter starts on its own printed page */
+    @media print {
+      .letter {
+        page-break-after: always;
+      }
+      #printButton, #infoForm {
+        display: none;
+      }
+    }
+    .letter h2 {
+      margin-top: 0;
+    }
+    .letter p, .letter ul {
+      margin: 10px 0;
+    }
+    .letter ul {
+      list-style: disc;
+      margin-left: 20px;
+    }
+    #printButton {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Generate DOGE Letters</h1>
+
+  <form id="infoForm">
+    <label>
+      Your Name:
+      <input type="text" id="yourName" required>
+    </label>
+    <label>
+      Your Address:
+      <input type="text" id="yourAddress" required>
+    </label>
+    <label>
+      City, State, ZIP:
+      <input type="text" id="yourCityStateZip" required>
+    </label>
+    <label>
+      Your Email:
+      <input type="email" id="yourEmail" required>
+    </label>
+    <label>
+      Your Phone Number:
+      <input type="text" id="yourPhone" required>
+    </label>
+    <label>
+      Date:
+      <input type="text" id="yourDate" placeholder="e.g., July 1, 2025" required>
+    </label>
+    <br>
+    <button type="button" onclick="generateLetters()">Generate Letters</button>
+  </form>
+
+  <!-- Button to print the letters -->
+  <button id="printButton" type="button" onclick="window.print()">Print Letters</button>
+
+  <!-- Container for the generated letters -->
+  <div id="lettersContainer"></div>
+
+  <script>
+    function generateLetters() {
+      // Get form values
+      const name = document.getElementById('yourName').value;
+      const address = document.getElementById('yourAddress').value;
+      const cityStateZip = document.getElementById('yourCityStateZip').value;
+      const email = document.getElementById('yourEmail').value;
+      const phone = document.getElementById('yourPhone').value;
+      const date = document.getElementById('yourDate').value;
+      
+      // Extract the common letter body text into one variable.
+      const commonLetterBody = `
+      <p>
+        I am writing as a concerned constituent regarding the Department of Government Efficiency (DOGE). Although DOGE was established by executive order with the aims of reducing wasteful spending, eliminating unnecessary regulations, and "modernizing federal technology and software to maximize governmental efficiency and productivity," it now appears to be run chaotically without regard to established process. This mismanagement is causing significant disruptions.
+      </p>
+      <p>My concerns include:</p>
+      <ul>
+        <li><strong>Lack of Process and Oversight:</strong> The disorganized management of DOGE risks undermining its stated mission. Rather than streamlining government functions, its chaotic operation may lead to significant service disruptions.</li>
+        <li><strong>Impact on Essential Services:</strong> Without clear processes and accountability, mismanagement could jeopardize the delivery of critical government services and public safety.</li>
+        <li><strong>Need for Transparent Oversight:</strong> It is imperative that any effort to reform government operations be executed with full transparency and strict adherence to process.</li>
+      </ul>
+      <p>
+        I respectfully urge you to call for a comprehensive review of DOGE’s management practices and to advocate for reforms that restore order, accountability, and continuity in government services.
+      </p>
+      <p>
+        Thank you for your attention to this urgent matter. I look forward to your response regarding the steps you plan to take.
+      </p>
+      `;
+      
+      // Build each letter template with a header, the common letter body, and a signature.
+      const letterScotPerry = `
+      <div class="letter" id="scot-perry">
+        <h2>Letter – To U.S. House, Rep. Scot Perry (District 10)</h2>
+        <p>
+          ${name}<br>
+          ${address}<br>
+          ${cityStateZip}<br>
+          ${email}<br>
+          ${phone}
+        </p>
+        <p>${date}</p>
+        <p>
+          The Honorable Scot Perry<br>
+          4999 Louise Drive, Suite 205<br>
+          Mechanicsburg, PA 17055<br>
+          Phone: 717-550-6565
+        </p>
+        <p><strong>Subject: Concern Over Chaotic Management of DOGE (Department of Government Efficiency)</strong></p>
+        <p>Dear Representative Perry,</p>
+        ${commonLetterBody}
+        <p>Sincerely,<br>${name}</p>
+      </div>
+      `;
+
+      const letterDawnKeefer = `
+      <div class="letter" id="dawn-keefer">
+        <h2>Letter – To Senator Dawn Keefer</h2>
+        <p>
+          ${name}<br>
+          ${address}<br>
+          ${cityStateZip}<br>
+          ${email}<br>
+          ${phone}
+        </p>
+        <p>${date}</p>
+        <p>
+          <strong>Option 1 – Official Senate Address:</strong><br>
+          Senator Dawn Keefer<br>
+          Senate Box 203031<br>
+          Harrisburg, PA 17120-3031<br>
+          Room: 168 Main Capitol<br>
+          Phone: (717) 787-8524<br>
+          FAX: (717) 782-2920<br><br>
+          <strong>Option 2 – Dillsburg Office Address:</strong><br>
+          Senator Dawn Keefer<br>
+          12 North Baltimore Street<br>
+          Dillsburg, PA 17019<br>
+          Phone: (717) 432-1730<br>
+          FAX: (717) 432-1733
+        </p>
+        <p><strong>Subject: Request for Oversight on the Chaotic Implementation of DOGE (Department of Government Efficiency)</strong></p>
+        <p>Dear Senator Keefer,</p>
+        ${commonLetterBody}
+        <p>Sincerely,<br>${name}</p>
+      </div>
+      `;
+
+      const letterMarcAnderson = `
+      <div class="letter" id="marc-anderson">
+        <h2>Letter – To Hon. Marc S. Anderson</h2>
+        <p>
+          ${name}<br>
+          ${address}<br>
+          ${cityStateZip}<br>
+          ${email}<br>
+          ${phone}
+        </p>
+        <p>${date}</p>
+        <p>
+          <strong>Option 1 – Dillsburg Office Address:</strong><br>
+          Hon. Marc S. Anderson<br>
+          1 East Harrisburg Street<br>
+          Dillsburg, PA 17019<br>
+          Phone: (717) 432-0792<br>
+          Toll Free: (833) 933-2965<br>
+          Fax: (717) 432-0795<br><br>
+          <strong>Option 2 – Capitol Address:</strong><br>
+          Hon. Marc S. Anderson<br>
+          428 Irvis Office Building<br>
+          P.O. Box 202092<br>
+          Harrisburg, PA 17120-2092<br>
+          Phone: (717) 783-8783<br>
+          Fax: (717) 782-2920
+        </p>
+        <p><strong>Subject: Concern Over the Chaotic Operation of DOGE (Department of Government Efficiency)</strong></p>
+        <p>Dear Representative Anderson,</p>
+        ${commonLetterBody}
+        <p>Sincerely,<br>${name}</p>
+      </div>
+      `;
+
+      const letterJohnFetterman = `
+      <div class="letter" id="john-fetterman">
+        <h2>Letter – To U.S. Senate, Sen. John Fetterman</h2>
+        <p>
+          ${name}<br>
+          ${address}<br>
+          ${cityStateZip}<br>
+          ${email}<br>
+          ${phone}
+        </p>
+        <p>${date}</p>
+        <p>
+          Senator John Fetterman<br>
+          142 Russell Senate Office Building<br>
+          Washington, DC 20510<br>
+          Phone: (202) 224-4254
+        </p>
+        <p><strong>Subject: Request for Enhanced Oversight on the Chaotic Management of DOGE (Department of Government Efficiency)</strong></p>
+        <p>Dear Senator Fetterman,</p>
+        ${commonLetterBody}
+        <p>Sincerely,<br>${name}</p>
+      </div>
+      `;
+
+      const letterDavidMcCormick = `
+      <div class="letter" id="david-mccormick">
+        <h2>Letter – To U.S. Senate, Sen. David McCormick</h2>
+        <p>
+          ${name}<br>
+          ${address}<br>
+          ${cityStateZip}<br>
+          ${email}<br>
+          ${phone}
+        </p>
+        <p>${date}</p>
+        <p>
+          Senator David McCormick<br>
+          B40C Dirksen Senate Office Building<br>
+          Washington, DC 20510
+        </p>
+        <p><strong>Subject: Concern Over the Chaotic Management of DOGE (Department of Government Efficiency)</strong></p>
+        <p>Dear Senator McCormick,</p>
+        ${commonLetterBody}
+        <p>Sincerely,<br>${name}</p>
+      </div>
+      `;
+
+      // Combine all letters into one container
+      const allLetters = letterScotPerry + letterDawnKeefer + letterMarcAnderson + letterJohnFetterman + letterDavidMcCormick;
+      document.getElementById('lettersContainer').innerHTML = allLetters;
+    }
+  </script>
+
+</body>
+</html>
